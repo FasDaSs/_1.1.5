@@ -4,6 +4,7 @@ import jm.task.core.jdbc.dao.UserDao;
 import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
 import jm.task.core.jdbc.model.User;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,12 +22,20 @@ public class UserServiceImpl implements UserService {
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        userDao.saveUser(name, lastName, age);
+        try {
+            userDao.saveUser(name, lastName, age);
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, e.toString());
+        }
         logger.log(Level.INFO, "User с именем – {0} добавлен в базу данных", name);
     }
 
     public void removeUserById(long id) {
-        userDao.removeUserById(id);
+        try {
+            userDao.removeUserById(id);
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, e.toString());
+        }
     }
 
     public List<User> getAllUsers() {
@@ -34,6 +43,10 @@ public class UserServiceImpl implements UserService {
     }
 
     public void cleanUsersTable() {
-        userDao.cleanUsersTable();
+        try {
+            userDao.cleanUsersTable();
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, e.toString());
+        }
     }
 }

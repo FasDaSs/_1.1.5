@@ -29,23 +29,35 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
-    public void saveUser(String name, String lastName, byte age) {
-        try (PreparedStatement statement = getConnection().prepareStatement("INSERT INTO Users (name, lastName, age) VALUES(?, ?, ?)")) {
+    public void saveUser(String name, String lastName, byte age) throws SQLException {
+        Connection connection = getConnection();
+        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO Users (name, lastName, age) VALUES(?, ?, ?)")) {
+            connection.setAutoCommit(false);
             statement.setString(1, name);
             statement.setString(2, lastName);
             statement.setByte(3, age);
             statement.executeUpdate();
+            connection.commit();
         } catch (SQLException e) {
             logger.log(Level.WARNING, e.toString());
+            connection.rollback();
+        } finally {
+            connection.setAutoCommit(true);
         }
     }
 
-    public void removeUserById(long id) {
-        try (PreparedStatement statement = getConnection().prepareStatement("DELETE FROM Users WHERE id = ?")) {
+    public void removeUserById(long id) throws SQLException {
+        Connection connection = getConnection();
+        try (PreparedStatement statement = connection.prepareStatement("DELETE FROM Users WHERE id = ?")) {
+            connection.setAutoCommit(false);
             statement.setLong(1, id);
             statement.executeUpdate();
+            connection.commit();
         } catch (SQLException e) {
             logger.log(Level.WARNING, e.toString());
+            connection.rollback();
+        } finally {
+            connection.setAutoCommit(true);
         }
     }
 
@@ -66,11 +78,17 @@ public class UserDaoJDBCImpl implements UserDao {
         return result;
     }
 
-    public void cleanUsersTable() {
-        try (Statement statement = getConnection().createStatement()) {
+    public void cleanUsersTable() throws SQLException {
+        Connection connection = getConnection();
+        try (Statement statement = connection.createStatement()) {
+            connection.setAutoCommit(false);
             statement.execute("TRUNCATE TABLE Users");
+            connection.commit();
         } catch (SQLException e) {
+            connection.rollback();
             logger.log(Level.WARNING, e.toString());
+        } finally {
+            connection.setAutoCommit(true);
         }
     }
 }
