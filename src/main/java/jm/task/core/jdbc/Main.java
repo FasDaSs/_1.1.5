@@ -3,6 +3,8 @@ package jm.task.core.jdbc;
 import jm.task.core.jdbc.service.UserService;
 import jm.task.core.jdbc.service.UserServiceImpl;
 
+import static jm.task.core.jdbc.util.Util.getSessionFactory;
+
 public class Main {
     public static void main(String[] args) {
         UserService userService = new UserServiceImpl();
@@ -20,5 +22,7 @@ public class Main {
 
         userService.cleanUsersTable();
         userService.dropUsersTable();
+
+        getSessionFactory().close();
     }
 }
