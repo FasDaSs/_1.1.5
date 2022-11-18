@@ -6,6 +6,8 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
@@ -65,7 +67,7 @@ public class UserDaoHibernateImpl implements UserDao {
     public List<User> getAllUsers() {
         try (Session session = getSessionFactory().openSession()) {
             session.beginTransaction();
-            List users = session.createQuery("from User").list();
+            List<User> users = session.createQuery("SELECT a FROM User a", User.class).getResultList();
             session.getTransaction().commit();
             return users;
         }
